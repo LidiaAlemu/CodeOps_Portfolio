@@ -1,0 +1,6 @@
+Paracetamol,46
+Amoxicillin,2
+Ibuprofen,30
+CoughSyrup,0
+Bandages,80
+VitaminC,40
