@@ -1,7 +1,0 @@
-Customer Totals
-Lidia: 1000ETB
-Abigiya: 500ETB
-Mihiret: 300ETB
-Daniel: 200ETB
-Amelewerk: 150ETB
-Yoseph: 100ETB

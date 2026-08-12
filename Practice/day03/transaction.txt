@@ -1,6 +1,0 @@
-Lidia,1000
-Daniel,200
-Abigiya,500
-Amelewerk,150
-Mihiret,300
-Yoseph,100
