@@ -1,9 +1,21 @@
+class BankConfig:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.interest_rate = 0.05
+            cls._instance.overdraft_limit = 1000
+        return cls._instance
+
+
 class Account:
 
     def __init__(self, owner, account_number, balance=0):
         self.owner = owner
         self.account_number = account_number
-        self.__balance = balance               
+        self.__balance = balance          
+        self._observers = []
 
     @property
     def balance(self):
@@ -13,6 +25,7 @@ class Account:
         if amount <= 0:
             raise ValueError("Deposit amount must be positive")
         self.__balance += amount
+        self._notify(f"Deposit +{amount} ETB → balance {self.balance} ETB")
 
     def withdraw(self, amount):
         if amount <= 0:
@@ -20,6 +33,7 @@ class Account:
         if amount > self.__balance:
             raise ValueError("Insufficient funds")
         self.__balance -= amount
+        self._notify(f"Withdrawal -{amount} ETB → balance {self.balance} ETB")
 
     def statement(self):
         print(f"{self.owner} ({self.account_number}): {self.balance:.2f} ETB")
@@ -27,14 +41,19 @@ class Account:
     def _adjust_balance(self, delta):
         self._Account__balance += delta
 
+    def subscribe(self, observer):
+        self._observers.append(observer)
 
+    def _notify(self, event):
+        for observer in self._observers:
+            observer.update(event)
 
 
 class SavingsAccount(Account):
 
-    def __init__(self, owner, account_number, balance=0, rate=0.05):
+    def __init__(self, owner, account_number, balance=0, rate=None):
         super().__init__(owner, account_number, balance)
-        self.rate = rate
+        self.rate = rate if rate is not None else BankConfig().interest_rate
 
     def add_interest(self):
         interest = self.balance * self.rate
@@ -46,14 +65,11 @@ class SavingsAccount(Account):
               f"{self.balance:.2f} ETB | rate: {self.rate*100:.1f}%")
 
 
-
-
-
 class CurrentAccount(Account):
 
-    def __init__(self, owner, account_number, balance=0, overdraft=1000):
+    def __init__(self, owner, account_number, balance=0, overdraft=None):
         super().__init__(owner, account_number, balance)
-        self.overdraft = overdraft
+        self.overdraft = overdraft if overdraft is not None else BankConfig().overdraft_limit
 
     def withdraw(self, amount):
         if amount <= 0:
@@ -61,43 +77,50 @@ class CurrentAccount(Account):
         if self.balance - amount < -self.overdraft:
             raise ValueError(f"Overdraft limit exceeded (max {self.overdraft} ETB)")
         self._adjust_balance(-amount)
-        print(f"Withdrew {amount} ETB from {self.account_number} "
-              f"(overdraft allowed)")
+        self._notify(f"Withdrawal -{amount} ETB (overdraft) → balance {self.balance} ETB")
 
     def statement(self):
         print(f"[Current] {self.owner} ({self.account_number}): "
               f"{self.balance:.2f} ETB | overdraft limit: {self.overdraft} ETB")
 
 
+class AccountFactory:
+    @staticmethod
+    def create(kind, owner, number, balance=0):
+        if kind == "savings":
+            return SavingsAccount(owner, number, balance)
+        if kind == "current":
+            return CurrentAccount(owner, number, balance)
+        raise ValueError(f"Unknown account type: {kind}")
+
+
+class SMSAlert:
+    def update(self, event):
+        print(f"[TeleBirr SMS] {event}")
+
+
+class AuditLog:
+    def update(self, event):
+        print(f"[Audit Log] {event}")
+
 
 if __name__ == "__main__":
-    
-    bank = [
-        SavingsAccount("Almaz Bekele", "CBE-1001", 1500, 0.05),
-        CurrentAccount("Dawit Tesfaye", "CBE-1002", 800, 1000),
-        SavingsAccount("Hanna Alemu", "CBE-1003", 3000, 0.04),
-        CurrentAccount("Tigist Mengistu", "CBE-1004", 200, 500),
-    ]
+    config1 = BankConfig()
+    config2 = BankConfig()
+    print(f"Same config? {config1 is config2}")
 
-    print("=== Account Statements ===")
-    for acc in bank:
-        acc.statement()                     
+    acc1 = AccountFactory.create("savings", "Almaz Bekele", "CBE-1001", 1500)
+    acc2 = AccountFactory.create("current", "Dawit Tesfaye", "CBE-1002", 800)
 
-    print("\n=== Applying Interest (Savings only) ===")
-    for acc in bank:
-        if isinstance(acc, SavingsAccount):
-            acc.add_interest()
+    acc1.subscribe(SMSAlert())
+    acc1.subscribe(AuditLog())
+    acc2.subscribe(AuditLog())
 
-    print("\n=== After Interest ===")
-    for acc in bank:
-        acc.statement()
+    print("\n--- Transactions ---")
+    acc1.deposit(500)
+    acc1.withdraw(200)
+    acc2.withdraw(1500)
 
-    print("\n=== Testing Overdraft ===")
-    bank[1].withdraw(1500)   
-    bank[1].statement()
-
-    
-    try:
-        bank[0].balance = -999
-    except AttributeError as e:
-        print(f"Protected: {e}")
+    print("\n--- Statements ---")
+    acc1.statement()
+    acc2.statement()
