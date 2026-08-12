@@ -1,3 +1,6 @@
+from collections import deque
+
+
 class BankConfig:
     _instance = None
 
@@ -10,12 +13,12 @@ class BankConfig:
 
 
 class Account:
-
     def __init__(self, owner, account_number, balance=0):
         self.owner = owner
         self.account_number = account_number
-        self.__balance = balance          
+        self.__balance = balance
         self._observers = []
+        self.history = []                  
 
     @property
     def balance(self):
@@ -25,6 +28,7 @@ class Account:
         if amount <= 0:
             raise ValueError("Deposit amount must be positive")
         self.__balance += amount
+        self.history.append(('deposit', amount))
         self._notify(f"Deposit +{amount} ETB → balance {self.balance} ETB")
 
     def withdraw(self, amount):
@@ -33,7 +37,21 @@ class Account:
         if amount > self.__balance:
             raise ValueError("Insufficient funds")
         self.__balance -= amount
+        self.history.append(('withdraw', amount))
         self._notify(f"Withdrawal -{amount} ETB → balance {self.balance} ETB")
+
+    def undo_last(self):
+        
+        if not self.history:
+            print("Nothing to undo")
+            return
+        action, amount = self.history.pop()
+        if action == 'deposit':
+            self.__balance -= amount
+            self._notify(f"Undo deposit -{amount} ETB → balance {self.balance} ETB")
+        elif action == 'withdraw':
+            self.__balance += amount
+            self._notify(f"Undo withdrawal +{amount} ETB → balance {self.balance} ETB")
 
     def statement(self):
         print(f"{self.owner} ({self.account_number}): {self.balance:.2f} ETB")
@@ -50,7 +68,6 @@ class Account:
 
 
 class SavingsAccount(Account):
-
     def __init__(self, owner, account_number, balance=0, rate=None):
         super().__init__(owner, account_number, balance)
         self.rate = rate if rate is not None else BankConfig().interest_rate
@@ -66,7 +83,6 @@ class SavingsAccount(Account):
 
 
 class CurrentAccount(Account):
-
     def __init__(self, owner, account_number, balance=0, overdraft=None):
         super().__init__(owner, account_number, balance)
         self.overdraft = overdraft if overdraft is not None else BankConfig().overdraft_limit
@@ -77,6 +93,7 @@ class CurrentAccount(Account):
         if self.balance - amount < -self.overdraft:
             raise ValueError(f"Overdraft limit exceeded (max {self.overdraft} ETB)")
         self._adjust_balance(-amount)
+        self.history.append(('withdraw', amount))
         self._notify(f"Withdrawal -{amount} ETB (overdraft) → balance {self.balance} ETB")
 
     def statement(self):
@@ -104,23 +121,88 @@ class AuditLog:
         print(f"[Audit Log] {event}")
 
 
+
+class AccountRegistry:
+    def __init__(self):
+        self.by_number = {}
+        self.order = []
+        self.pending_transfers = deque()
+
+    def add(self, acc):
+        self.by_number[acc.account_number] = acc
+        self.order.append(acc.account_number)
+
+    def find(self, number):
+        return self.by_number.get(number)   
+
+    def list_all(self):
+        return [self.by_number[num] for num in self.order]
+
+    def transfer_request(self, from_num, to_num, amount):
+        
+        self.pending_transfers.append((from_num, to_num, amount))
+        print(f"Queued transfer: {from_num} → {to_num}, {amount} ETB")
+
+    def process_transfers(self):
+        
+        while self.pending_transfers:
+            from_num, to_num, amount = self.pending_transfers.popleft()
+            from_acc = self.find(from_num)
+            to_acc = self.find(to_num)
+            if not from_acc or not to_acc:
+                print(f"Transfer failed: invalid account(s) in {from_num}→{to_num}")
+                continue
+            try:
+                from_acc.withdraw(amount)
+                to_acc.deposit(amount)
+                print(f"Transferred {amount} ETB from {from_num} to {to_num}")
+            except ValueError as e:
+                print(f"Transfer failed: {e}")
+
+
+
 if __name__ == "__main__":
-    config1 = BankConfig()
-    config2 = BankConfig()
-    print(f"Same config? {config1 is config2}")
+    reg = AccountRegistry()
 
-    acc1 = AccountFactory.create("savings", "Almaz Bekele", "CBE-1001", 1500)
-    acc2 = AccountFactory.create("current", "Dawit Tesfaye", "CBE-1002", 800)
+    
+    a1 = AccountFactory.create("savings", "Almaz Bekele", "CBE-1001", 1500)
+    a2 = AccountFactory.create("current", "Dawit Tesfaye", "CBE-1002", 800)
+    reg.add(a1)
+    reg.add(a2)
 
-    acc1.subscribe(SMSAlert())
-    acc1.subscribe(AuditLog())
-    acc2.subscribe(AuditLog())
+    
+    a1.subscribe(SMSAlert())
 
-    print("\n--- Transactions ---")
-    acc1.deposit(500)
-    acc1.withdraw(200)
-    acc2.withdraw(1500)
+    print("=== Initial Statements ===")
+    for acc in reg.list_all():
+        acc.statement()
 
-    print("\n--- Statements ---")
-    acc1.statement()
-    acc2.statement()
+    
+    print("\n=== Transactions ===")
+    a1.deposit(500)
+    a1.withdraw(200)
+    a2.withdraw(300)
+
+
+    print("\n=== History (a1) ===")
+    print(a1.history)
+
+
+    print("\n=== Undo Last (a1) ===")
+    a1.undo_last()
+    a1.statement()
+
+    print("\n=== O(1) Lookup ===")
+    acc = reg.find("CBE-1002")
+    if acc:
+        acc.statement()
+
+   
+    print("\n=== Pending Transfers ===")
+    reg.transfer_request("CBE-1002", "CBE-1001", 100)
+    reg.transfer_request("CBE-1001", "CBE-1002", 50)
+    reg.process_transfers()
+
+    print("\n=== After Transfers ===")
+    for acc in reg.list_all():
+        acc.statement()
