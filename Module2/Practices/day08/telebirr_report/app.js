@@ -1,4 +1,4 @@
-import { transactions } from "./transactions.js";
+import { transactions } from "./transaction.js";
 import { totalByType, formatReceipts } from "./report.js";
 
 const creditTotal = totalByType(transactions, "credit");
