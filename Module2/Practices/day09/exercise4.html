@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 4</title>
+</head>
+<body>
+    <h1>Asbeza List</h1>
+    <ul id="list">
+        <li>Teff <button class="del">×</button></li>
+        <li>Berbere <button class="del">×</button></li>
+        <li>Shiro <button class="del">×</button></li>
+        <li>Onion<button class="del">×</button></li>
+        <li>Oil <button class="del">×</button></li>
+        <li>Tomatos <button class="del">×</button></li>
+        <li>Potatoes <button class="del">×</button></li>
+        <li>Bread <button class="del">×</button></li>
+    </ul>
+
+    <script>
+        const list = document.querySelector("#list");
+
+        list.addEventListener("click", function(e) {
+            if (e.target.matches(".del")) {
+                e.target.closest("li").remove();
+            }
+        });
+    </script>
+</body>
+</html>
