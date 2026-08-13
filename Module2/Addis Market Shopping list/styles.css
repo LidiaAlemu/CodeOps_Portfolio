@@ -1,0 +1,51 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 480px;
+  margin: auto;
+  padding: 2rem;
+  background: #faf7f2;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #1f6f43;
+  color: white;
+  cursor: pointer;
+}
+
+ul#list {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+li.bought {
+  text-decoration: line-through;
+  color: #888;
+}
+
+button.del {
+  background: #b23b3b;
+  padding: 0.2rem 0.5rem;
+}
