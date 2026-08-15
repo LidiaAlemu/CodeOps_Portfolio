@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 1</title>
+</head>
+<body>
+    <select id="lang">
+        <option value="en">English</option>
+        <option value="am">Amharic</option>
+    </select>
+
+    <script>
+        const select = document.querySelector("#lang");
+
+        const saved = localStorage.getItem("lang");
+        if (saved) {
+            select.value = saved;
+        }
+
+        select.addEventListener("change", function() {
+            localStorage.setItem("lang", select.value);
+        });
+    </script>
+</body>
+</html>
