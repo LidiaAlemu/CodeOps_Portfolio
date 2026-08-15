@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 3</title>
+</head>
+<body>
+    <form id="signup-form">
+        <label for="name">Name</label>
+        <input id="name" type="text" autocomplete="off" />
+
+        <label for="phone">Phone</label>
+        <input id="phone" type="text" autocomplete="off" />
+
+        <button type="submit">Sign Up</button>
+        <p id="error"></p>
+    </form>
+
+    <script>
+        const form = document.querySelector("#signup-form");
+        const nameInput = document.querySelector("#name");
+        const phoneInput = document.querySelector("#phone");
+        const errorMsg = document.querySelector("#error");
+    </script>
+    
+</body>
+</html>
