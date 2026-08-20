@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saba Health provides simple everyday wellness information">
+    <title>Saba Health</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+
+        <div class="brand">
+            <span class="brand-name">Saba</span>
+            <span class="brand-heart">♡</span>
+            <span class="brand-subtitle">HEALTH</span>
+        </div>
+
+       <p class="tagline">Your everyday wellness companion</p>
+    </header>
+
+    <main>
+        <section class="search-section" aria-label="Search health tips">
+
+            <label for="search"> Search health tips </label>
+            <input type="search" id="search" placeholder="Search health tips..." autocomplete="off">
+
+        </section>
+
+        <section class="categories-section" aria-labelledby="categories-heading">
+
+            <h2 id="categories-heading"> Categories </h2>
+            <div id="categories" class="categories"></div>
+
+        </section>
+
+        <div class="content-layout">
+
+            <section class="tips-section" aria-labelledby="tips-heading">
+
+                <div class="section-heading">
+                    <h2 id="tips-heading"> Health Tips </h2>
+                    <p> Simple tips for a healthier you </p>
+                </div>
+
+                <div id="status" class="status" aria-live="polite"></div>
+                <div id="tips" class="tips-grid"></div>
+
+            </section>
+
+            <aside class="favorites-section" aria-labelledby="favorites-heading">
+
+                <div class="favorites-header">
+                    <h2 id="favorites-heading"> My Favorites </h2>
+                    <span id="favorite-count" class="favorite-count"> 0 </span>
+                </div>
+                <div id="favorites" class="favorites-list"></div>
+
+            </aside> 
+            
+        </div> 
+
+    </main>
+    
+    <footer class="site-footer">
+        <p> <strong>Saba Health</strong> </p>
+        <p> General Wellness Information. Addis Ababa, Ethiopia</p>
+        <p>This app does not replace professional medical advice.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
