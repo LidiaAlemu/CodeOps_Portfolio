@@ -9,64 +9,81 @@
 </head>
 <body>
     <header class="site-header">
-
         <div class="brand">
-            <span class="brand-name">Saba</span>
+            <h1 class="brand-name">Saba</h1>
             <span class="brand-heart">♡</span>
             <span class="brand-subtitle">HEALTH</span>
         </div>
-
-       <p class="tagline">Your everyday wellness companion</p>
+        <p class="tagline">Your everyday wellness companion</p>
     </header>
 
     <main>
         <section class="search-section" aria-label="Search health tips">
-
-            <label for="search"> Search health tips </label>
+            <label for="search">Search health tips</label>
             <input type="search" id="search" placeholder="Search health tips..." autocomplete="off">
-
         </section>
 
         <section class="categories-section" aria-labelledby="categories-heading">
-
-            <h2 id="categories-heading"> Categories </h2>
+            <h2 id="categories-heading">Categories</h2>
             <div id="categories" class="categories"></div>
-
         </section>
 
         <div class="content-layout">
-
             <section class="tips-section" aria-labelledby="tips-heading">
-
                 <div class="section-heading">
-                    <h2 id="tips-heading"> Health Tips </h2>
-                    <p> Simple tips for a healthier you </p>
+                    <h2 id="tips-heading">Health Tips</h2>
+                    <p>Simple tips for a healthier you</p>
                 </div>
-
                 <div id="status" class="status" aria-live="polite"></div>
                 <div id="tips" class="tips-grid"></div>
-
             </section>
 
             <aside class="favorites-section" aria-labelledby="favorites-heading">
-
                 <div class="favorites-header">
-                    <h2 id="favorites-heading"> My Favorites </h2>
-                    <span id="favorite-count" class="favorite-count"> 0 </span>
+                    <h2 id="favorites-heading">My Favorites</h2>
+                    <span id="favorite-count" class="favorite-count">0</span>
                 </div>
                 <div id="favorites" class="favorites-list"></div>
+            </aside>
+        </div>
 
-            </aside> 
-            
-        </div> 
-
+        <section class="subscribe-section" aria-labelledby="subscribe-heading">
+            <div class="subscribe-card">
+                <h2 id="subscribe-heading">Get Daily Wellness Tips</h2>
+                <p>Subscribe to receive a simple health tip every morning.</p>
+                <form id="subscribe-form" novalidate>
+                    <div class="form-group">
+                        <label for="sub-name">Name</label>
+                        <input type="text" id="sub-name" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="sub-email">Email</label>
+                        <input type="email" id="sub-email" required autocomplete="email" placeholder="you@example.com">
+                    </div>
+                    <p id="form-error" class="error" aria-live="polite"></p>
+                    <button type="submit" class="submit-button">Subscribe</button>
+                </form>
+                <div id="form-success" class="success" hidden></div>
+            </div>
+        </section>
     </main>
-    
+
     <footer class="site-footer">
-        <p> <strong>Saba Health</strong> </p>
-        <p> General Wellness Information. Addis Ababa, Ethiopia</p>
+        <p><strong>Saba Health</strong></p>
+        <p>General Wellness Information. Addis Ababa, Ethiopia</p>
         <p>This app does not replace professional medical advice.</p>
     </footer>
+
+    <!-- Tip detail modal -->
+    <div id="tip-modal" class="modal" hidden>
+        <div class="modal-overlay" data-action="close-modal"></div>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <button class="modal-close" data-action="close-modal" aria-label="Close"> &times; </button>
+            <h2 id="modal-title"></h2>
+            <p id="modal-content"></p>
+            <p id="modal-source" class="modal-source"></p>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
