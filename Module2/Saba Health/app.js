@@ -8,6 +8,7 @@ const state = {
 // ==================== Constants ====================
 const STORAGE_KEY = "sabaHealthFavorites";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NAME_REGEX = /^[A-Za-z][A-Za-z\s'-]*$/;
 
 // ==================== DOM Elements ====================
 const tipsEl = document.querySelector("#tips");
@@ -232,8 +233,17 @@ favoritesEl.addEventListener("click", event => {
 
 // ==================== Subscription Form ====================
 function validateForm(name, email) {
-    if (!name.trim()) return "Please enter your name.";
-    if (!EMAIL_REGEX.test(email.trim())) return "Please enter a valid email address.";
+    const trimmedName = name.trim();
+    if(!trimmedName){
+        return "Please enter your name.";
+    }
+    if(!NAME_REGEX.test(trimmedName)) {
+        return "Name can only start with a letter."
+    }
+
+    if (!EMAIL_REGEX.test(email.trim())) {
+        return "Please enter a valid email address.";
+    }
     return "";
 }
 
